@@ -1,0 +1,1411 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "S2D Platform, TU API v2",
+    "version": "1.0",
+    "contact": {
+      "name": "Salah Abdullah",
+      "email": "s.aldhamdy@s2dsys.com"
+    },
+    "description": "S2D Platform, Terminal Users API V2.",
+    "license": {
+      "name": "Privt",
+      "url": "n"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://tuapi-test.s2d.app",
+      "description": "Test"
+    },
+    {
+      "description": "Production",
+      "url": "https://tuapi.s2d.app"
+    }
+  ],
+  "paths": {
+    "/init": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [
+          "init"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/response"
+                    },
+                    {
+                      "properties": {
+                        "rb": {
+                          "type": "object",
+                          "properties": {
+                            "logo": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "primColor": {
+                              "type": "string"
+                            },
+                            "secnColor": {
+                              "type": "string"
+                            },
+                            "onesId": {
+                              "type": "string"
+                            },
+                            "gpProgNo": {
+                              "type": "string"
+                            },
+                            "msgs": {
+                              "type": "object",
+                              "properties": {
+                                "about": {
+                                  "type": "string"
+                                },
+                                "signup": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                },
+                "examples": {}
+              }
+            }
+          },
+          "404": {
+            "description": "App with id {appid} was not found"
+          }
+        },
+        "operationId": "getAppConfig",
+        "description": "Get init app config, like about info, app config data ...etc",
+        "parameters": [],
+        "security": [
+          {
+            "term-info": []
+          }
+        ]
+      },
+      "parameters": []
+    },
+    "/auth/login": {
+      "parameters": [],
+      "post": {
+        "summary": "User Login - POST endpoint",
+        "operationId": "post-auth-login",
+        "responses": {
+          "200": {
+            "description": "Login Success, and device is trusted, must do verfiy in background",
+            "headers": {},
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/response"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "type": "object",
+                          "description": "response body",
+                          "required": [
+                            "tid",
+                            "sid"
+                          ],
+                          "properties": {
+                            "otp": {
+                              "type": "string",
+                              "description": "OTP, if login device is trusted for this user server will return OTP in the response insted of SMS, so client will do verfiy login in background.",
+                              "example": "123745"
+                            },
+                            "tid": {
+                              "type": "string",
+                              "example": "4001299484",
+                              "description": "terminal id from server, is the id of device/browser info record in DB"
+                            },
+                            "sid": {
+                              "type": "string",
+                              "description": "session id, unique for every session"
+                            }
+                          }
+                        }
+                      },
+                      "required": [
+                        "rb"
+                      ]
+                    }
+                  ]
+                },
+                "examples": {
+                  "login-resp-example-trusted": {
+                    "value": {
+                      "rc": "0",
+                      "rd": "string",
+                      "ca": "1002",
+                      "rb": {
+                        "otp": "123745",
+                        "tid": "4001299484"
+                      }
+                    }
+                  },
+                  "login-resp-example-not-trusted": {
+                    "value": {
+                      "rc": "0",
+                      "rd": "string",
+                      "ca": "string",
+                      "rb": {
+                        "otp": "123745",
+                        "tid": "4001299484"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Login Success, but device must verfiy using OTP sent to user mobile no",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resp-body-login"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, login info is not correct, user/acc locked or device not supported ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resp-body-login"
+                }
+              }
+            }
+          }
+        },
+        "description": "User login operation ",
+        "security": [
+          {
+            "term-info": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "un": {
+                    "type": "string",
+                    "description": "merchant user name."
+                  },
+                  "up": {
+                    "type": "string",
+                    "description": "merchant user hashed password."
+                  },
+                  "tdi": {
+                    "type": "object",
+                    "description": "Terminal Device/Browser full info ex. (type, serail, OS, OS version, model, brand, time, other)",
+                    "required": [
+                      "uuid",
+                      "mod",
+                      "bra",
+                      "osy",
+                      "osv",
+                      "lng",
+                      "isRooted",
+                      "md5"
+                    ],
+                    "properties": {
+                      "uuid": {
+                        "type": "string",
+                        "minLength": 6,
+                        "maxLength": 64,
+                        "description": "Terminal Device SerialNo/IMEI or Browser UUID. \nit must begin with prefix:\nif uuid > U\nif seril> S\nif IMEI > I",
+                        "pattern": "^([I,U,S][A-Z a-z 0-9])"
+                      },
+                      "mod": {
+                        "type": "string",
+                        "description": "Terminal Device  Model."
+                      },
+                      "bra": {
+                        "type": "string",
+                        "description": "Terminal Device Brand."
+                      },
+                      "osy": {
+                        "type": "string",
+                        "description": "Terminal Device Operating System."
+                      },
+                      "osv": {
+                        "type": "string",
+                        "description": "Terminal Device OS version."
+                      },
+                      "lng": {
+                        "type": "string",
+                        "description": "Termminal device language."
+                      },
+                      "isRooted": {
+                        "type": "boolean",
+                        "description": "Is device rooted/jilyBreaked"
+                      },
+                      "md5": {
+                        "type": "string",
+                        "description": "md5 of all info. ex: (md5(uuid;mod;bra;.....etc)."
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "un",
+                  "up",
+                  "tdi"
+                ]
+              },
+              "examples": {
+                "login-example-1": {
+                  "value": {
+                    "un": "7777777",
+                    "up": "Baslkjsldkfj;asdlfuwl;sdfsd",
+                    "tdi": {
+                      "uuid": "S107358823R3",
+                      "mod": "MS-780",
+                      "bra": "Samsunge",
+                      "osy": "Android",
+                      "osv": "Pie 10",
+                      "lng": "en",
+                      "isRooted": true,
+                      "md5": "a1b2c3d4e5f6acdea322"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "parameters": []
+      }
+    },
+    "/signup/{sginupRef}": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "sginupRef",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [],
+        "responses": {},
+        "operationId": "get-signup-sginupRef"
+      },
+      "post": {
+        "summary": "",
+        "operationId": "post-signup-sginupRef",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/users/{userLogin}": {
+      "get": {
+        "summary": "Retrive User/s - GET endpoint",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/response"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/MerchantUser"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {}
+              }
+            }
+          }
+        },
+        "operationId": "get-users",
+        "description": "Get merchant users list or by get user by login"
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "userLogin",
+          "in": "path",
+          "description": "User login name to by searched by.",
+          "style": "label"
+        }
+      ],
+      "post": {
+        "summary": "Create User - POST endpoint",
+        "operationId": "post-users-userLogin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/response"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "$ref": "#/components/schemas/MerchantUser"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Something wronge with request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                }
+              }
+            }
+          },
+          "": {
+            "description": "Created Successfuly ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/response"
+                    },
+                    {
+                      "$ref": "#/components/schemas/MerchantUser"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "Create new user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MerchantUser"
+              }
+            }
+          },
+          "description": "User data object, all fileds required except (useCode and useUsedLmt)."
+        }
+      },
+      "put": {
+        "summary": "Update User - PUT endpoint",
+        "operationId": "put-users-userLogin",
+        "responses": {
+          "200": {
+            "description": "Request Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                }
+              }
+            }
+          }
+        },
+        "description": "Update current user record by userLogin.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MerchantUser"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "UnActivate User - DEL endpoint",
+        "operationId": "delete-users-userLogin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                }
+              }
+            }
+          }
+        },
+        "description": "Unactivate User ."
+      }
+    },
+    "/auth/verify": {
+      "post": {
+        "summary": "Verify Login - POST endpoint",
+        "operationId": "post-auth-verify",
+        "responses": {
+          "200": {
+            "description": "OK, Verify Sucess",
+            "headers": {},
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/response"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "type": "object",
+                          "properties": {
+                            "tkn": {
+                              "type": "string",
+                              "description": "Authoriaztion Token"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "OTP or UserLogin or SessionId expired or invalied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "description": "Verify login for new devices/terminal with OTP sent to users mobile.\nwhen user login from new devices/terminal system sent OTP SMS to their mobile,\nthen user use this OTP to verfiy login operation. ",
+        "security": [
+          {
+            "term-info": []
+          },
+          {
+            "sess-info": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "otp": {
+                    "type": "string",
+                    "description": "OTP which sent to user mobile as SMS "
+                  }
+                },
+                "required": [
+                  "otp"
+                ]
+              }
+            }
+          },
+          "description": ""
+        }
+      },
+      "parameters": []
+    },
+    "/auth/verify-pin": {
+      "post": {
+        "summary": "Verify PIN - POST endpoint",
+        "operationId": "post-auth-v-pin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PIN is not valied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "examples": {}
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pin": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "pin"
+                ]
+              }
+            }
+          },
+          "description": ""
+        },
+        "description": "Verify Trans PIN."
+      },
+      "parameters": []
+    },
+    "/profile/{profileCheckSum}": {
+      "get": {
+        "summary": "Termainl User Profile - GET endpoint",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/response"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "type": "object",
+                          "properties": {
+                            "srv": {
+                              "type": "object",
+                              "properties": {
+                                "opes": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "opeCode": {
+                                        "type": "string"
+                                      },
+                                      "opeName": {
+                                        "type": "string"
+                                      },
+                                      "opeCat": {
+                                        "type": "string"
+                                      },
+                                      "opeItems": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "iteCode": {
+                                              "type": "string"
+                                            },
+                                            "iteName": {
+                                              "type": "string"
+                                            },
+                                            "iteDesc": {
+                                              "type": "string"
+                                            },
+                                            "iteIsOpen": {
+                                              "type": "string"
+                                            },
+                                            "iteCost": {
+                                              "type": "string"
+                                            },
+                                            "iteMinAmt": {
+                                              "type": "string"
+                                            },
+                                            "iteMamAmt": {
+                                              "type": "string"
+                                            },
+                                            "iteStyCode": {
+                                              "type": "string"
+                                            },
+                                            "iteDens": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "denCode": {
+                                                    "type": "string"
+                                                  },
+                                                  "denId": {
+                                                    "type": "string"
+                                                  },
+                                                  "denName": {
+                                                    "type": "string"
+                                                  },
+                                                  "denCost": {
+                                                    "type": "string"
+                                                  },
+                                                  "denUnit": {
+                                                    "type": "string"
+                                                  },
+                                                  "denPrice": {
+                                                    "type": "string"
+                                                  },
+                                                  "denDesc": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "tco": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "tcoCode": {
+                                    "type": "string"
+                                  },
+                                  "tcoName": {
+                                    "type": "string"
+                                  },
+                                  "tcoIsFin": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            },
+                            "chkSum": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "srv"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-term-user-profile",
+        "description": "Get Terminal user profile"
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "profileCheckSum",
+          "in": "path",
+          "required": true,
+          "description": "check-sum for current profile."
+        }
+      ]
+    },
+    "/auth/verify-resend": {
+      "get": {
+        "summary": "Verfiy-Resend -  GET endpoint",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-auth-verify-resend",
+        "security": [
+          {
+            "term-info": []
+          },
+          {
+            "sess-info": []
+          }
+        ],
+        "description": "Resend Verify code OTP in case it wasn't received by user."
+      }
+    },
+    "/auth/rest-pass": {
+      "post": {
+        "summary": "Reset Password - endpoint",
+        "operationId": "post-auth-rest-pass",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                }
+              }
+            }
+          }
+        },
+        "description": "Reset user password.",
+        "parameters": [],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "useLogin": {
+                    "type": "string",
+                    "description": "User login name"
+                  },
+                  "useAccIden": {
+                    "type": "string",
+                    "description": "User Merchant account iden."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/change-pass": {
+      "post": {
+        "summary": "Change Password - endpoint",
+        "operationId": "post-auth-change-pass",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                }
+              }
+            }
+          }
+        },
+        "description": "Change password of user.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldpass": {
+                    "type": "string"
+                  },
+                  "newpass": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/change-pin": {
+      "post": {
+        "summary": "Change PIN - endpoint",
+        "operationId": "post-auth-change-pin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                }
+              }
+            }
+          }
+        },
+        "description": "Change user PIN code.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldpin": {
+                    "type": "string"
+                  },
+                  "newpin": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mers/{merCode}": {
+      "get": {
+        "summary": "Get Merchant/s - endpoint",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/response"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Merchant"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-mers",
+        "description": "Retrive merchants list.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "q",
+            "description": "phrase to search in merchants (name, crop name, addr,..etc)"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "city",
+            "description": "city code to search merchants"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "status",
+            "description": "status to search merchant"
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "merCode",
+          "in": "path",
+          "required": true,
+          "description": "merchant code"
+        }
+      ],
+      "post": {
+        "summary": "",
+        "operationId": "post-mers-merCode",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                }
+              }
+            }
+          }
+        },
+        "description": "Create Merchant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Merchant"
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Merchant - endpoint",
+        "operationId": "put-mers-merCode",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                }
+              }
+            }
+          }
+        },
+        "description": "Update Merchant data",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "enable",
+                      "disable",
+                      "restpin",
+                      "restpass"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/topup": {
+      "get": {
+        "summary": "Get Transactions - endpoint",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/response"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/TopupTransaction"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-topup",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "df"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "dt"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "status"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "ope"
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "response": {
+        "title": "API Base Response",
+        "type": "object",
+        "description": "every response from API will be in the same structuer.",
+        "properties": {
+          "rc": {
+            "type": "string",
+            "enum": [
+              "0",
+              "30-39",
+              "-100",
+              "-200",
+              "117",
+              "60-69"
+            ],
+            "description": "Response code as in artical [Response Codes]"
+          },
+          "rd": {
+            "type": "string",
+            "description": "Response description"
+          },
+          "ca": {
+            "type": "string",
+            "description": "Control action, sent from server to be executed on terminal."
+          }
+        },
+        "required": [
+          "rc",
+          "rd"
+        ],
+        "x-examples": {
+          "example-1": {
+            "rc": "0",
+            "rd": "string",
+            "ca": "string"
+          }
+        }
+      },
+      "response-fin-body": {
+        "title": "response-fin-body",
+        "type": "object",
+        "description": "internal response body, only for finicail requests.",
+        "properties": {
+          "trxId": {
+            "type": "string"
+          },
+          "trxCst": {
+            "type": "number"
+          },
+          "trxCcy": {
+            "type": "string"
+          },
+          "trxCcyRate": {
+            "type": "number"
+          },
+          "trxAcc": {
+            "type": "string"
+          },
+          "accBal": {
+            "type": "number"
+          }
+        },
+        "x-tags": [
+          "response",
+          "finiacial"
+        ]
+      },
+      "request": {
+        "title": "request",
+        "type": "object",
+        "x-examples": {
+          "example-1": {
+            "ac": "1001",
+            "tt": "WAPP or AAPP(android app) or IAPP(IOS app) or ",
+            "ti": "string",
+            "ai": "string",
+            "av": "string",
+            "un": "string",
+            "": "string"
+          }
+        },
+        "properties": {
+          "ac": {
+            "type": "string",
+            "description": "Action Code aka operation id"
+          },
+          "tt": {
+            "type": "string",
+            "enum": [
+              "WAPP",
+              "AAPP",
+              "IAPP",
+              "POS",
+              "SYS"
+            ],
+            "description": "Terminal Type (web app, android app, ios, POS device or 3rd-Partiy System)"
+          },
+          "ti": {
+            "type": "string",
+            "description": "Terminal Iden (got from server for uniqe termanil )"
+          },
+          "ai": {
+            "type": "string",
+            "description": "Company App Iden"
+          },
+          "av": {
+            "type": "string",
+            "description": "App Version name ex. 1.1.1"
+          },
+          "un": {
+            "type": "string",
+            "description": "User name"
+          },
+          "up": {
+            "description": "User Password",
+            "oneOf": [
+              {}
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "ac"
+        ]
+      },
+      "resp-body-signup": {
+        "title": "resp-body-signup",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "resp-body-get-users": {
+        "title": "resp-body-get-users",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "MerchantUser": {
+        "title": "MerchantUser",
+        "type": "object",
+        "description": "Merchant User Model",
+        "properties": {
+          "useCode": {
+            "type": "number",
+            "description": "User Code (aka id)\n"
+          },
+          "useFName": {
+            "type": "string",
+            "description": "User full name"
+          },
+          "useLogin": {
+            "type": "string",
+            "description": "User login name (aka userName)\n"
+          },
+          "useIsActive": {
+            "type": "boolean",
+            "description": "User active status"
+          },
+          "useLimt": {
+            "type": "number",
+            "description": "Allowed amount to use from merchant balance"
+          },
+          "useUsedLmt": {
+            "description": "used limit amount ",
+            "type": "number"
+          }
+        },
+        "x-tags": [
+          "User",
+          "response"
+        ]
+      },
+      "Merchant": {
+        "title": "Merchant",
+        "type": "object",
+        "description": "Merchant Account Model",
+        "properties": {
+          "merCode": {
+            "type": "number"
+          },
+          "merIden": {
+            "type": "string"
+          },
+          "merName": {
+            "type": "string"
+          },
+          "merCName": {
+            "type": "string"
+          },
+          "merPhone1": {
+            "type": "string"
+          },
+          "merPhone2": {
+            "type": "string"
+          },
+          "merGrp": {
+            "type": "string"
+          },
+          "merStatus": {
+            "type": "string"
+          },
+          "merCity": {
+            "type": "string"
+          },
+          "merBal": {
+            "type": "number"
+          },
+          "merStDate": {
+            "type": "string"
+          }
+        }
+      },
+      "TopupTransaction": {
+        "title": "TopupTransaction",
+        "type": "object",
+        "properties": {
+          "traCode": {
+            "type": "string"
+          },
+          "traDate": {
+            "type": "string"
+          },
+          "traTco": {
+            "type": "string"
+          },
+          "traOpe": {
+            "type": "string"
+          },
+          "traOse": {
+            "type": "string"
+          },
+          "traIte": {
+            "type": "string"
+          },
+          "traDen": {
+            "type": "string"
+          },
+          "traAmt": {
+            "type": "string"
+          },
+          "traCst": {
+            "type": "string"
+          },
+          "traSt": {
+            "type": "string"
+          },
+          "traSub": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Authorization": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "used to send authoriaztion token"
+      },
+      "term-info": {
+        "name": "term-info",
+        "type": "apiKey",
+        "in": "header",
+        "description": "must sent with every request and will contian app uniqe info (appId +':'+ appVersion +':'+ termType)"
+      },
+      "sess-info": {
+        "name": "sess-info",
+        "type": "apiKey",
+        "in": "header",
+        "description": "Used to send session info which is a string consist of  (UserLogin + ':' + TermId)"
+      }
+    }
+  },
+  "security": [
+    {
+      "Authorization": []
+    },
+    {
+      "term-info": []
+    },
+    {
+      "sess-info": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "init"
+    },
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "auth"
+    }
+  ]
+}
