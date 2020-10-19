@@ -94,7 +94,7 @@
         "parameters": [],
         "security": [
           {
-            "term-info": []
+            "Termainl Info": []
           }
         ]
       },
@@ -103,11 +103,11 @@
     "/auth/login": {
       "parameters": [],
       "post": {
-        "summary": "User Login - POST endpoint",
-        "operationId": "post-auth-login",
+        "summary": "Login - endpoint",
+        "operationId": "login",
         "responses": {
           "200": {
-            "description": "Login Success, and device is trusted, must do verfiy in background",
+            "description": "Login Success, if device/browser is trusted for this user, OTP will found in response body, so must make verfiy login in background.",
             "headers": {},
             "content": {
               "application/json": {
@@ -177,31 +177,21 @@
               }
             }
           },
-          "202": {
-            "description": "Login Success, but device must verfiy using OTP sent to user mobile no",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/resp-body-login"
-                }
-              }
-            }
-          },
           "401": {
             "description": "Unauthorized, login info is not correct, user/acc locked or device not supported ",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/resp-body-login"
+                  "$ref": "#/components/schemas/BaseResponse"
                 }
               }
             }
           }
         },
-        "description": "User login operation ",
+        "description": "User login operation API",
         "security": [
           {
-            "term-info": []
+            "Termainl Info": []
           }
         ],
         "requestBody": {
@@ -219,55 +209,7 @@
                     "description": "merchant user hashed password."
                   },
                   "tdi": {
-                    "type": "object",
-                    "description": "Terminal Device/Browser full info ex. (type, serail, OS, OS version, model, brand, time, other)",
-                    "required": [
-                      "uuid",
-                      "mod",
-                      "bra",
-                      "osy",
-                      "osv",
-                      "lng",
-                      "isRooted",
-                      "md5"
-                    ],
-                    "properties": {
-                      "uuid": {
-                        "type": "string",
-                        "minLength": 6,
-                        "maxLength": 64,
-                        "description": "Terminal Device SerialNo/IMEI or Browser UUID. \nit must begin with prefix:\nif uuid > U\nif seril> S\nif IMEI > I",
-                        "pattern": "^([I,U,S][A-Z a-z 0-9])"
-                      },
-                      "mod": {
-                        "type": "string",
-                        "description": "Terminal Device  Model."
-                      },
-                      "bra": {
-                        "type": "string",
-                        "description": "Terminal Device Brand."
-                      },
-                      "osy": {
-                        "type": "string",
-                        "description": "Terminal Device Operating System."
-                      },
-                      "osv": {
-                        "type": "string",
-                        "description": "Terminal Device OS version."
-                      },
-                      "lng": {
-                        "type": "string",
-                        "description": "Termminal device language."
-                      },
-                      "isRooted": {
-                        "type": "boolean",
-                        "description": "Is device rooted/jilyBreaked"
-                      },
-                      "md5": {
-                        "type": "string",
-                        "description": "md5 of all info. ex: (md5(uuid;mod;bra;.....etc)."
-                      }
-                    }
+                    "$ref": "#/components/schemas/TerminalDevice"
                   }
                 },
                 "required": [
@@ -295,7 +237,8 @@
                 }
               }
             }
-          }
+          },
+          "description": ""
         },
         "tags": [
           "auth"
@@ -318,7 +261,12 @@
         "summary": "Your GET endpoint",
         "tags": [],
         "responses": {},
-        "operationId": "get-signup-sginupRef"
+        "operationId": "get-signup-sginupRef",
+        "security": [
+          {
+            "Termainl Info": []
+          }
+        ]
       },
       "post": {
         "summary": "",
@@ -330,10 +278,12 @@
         }
       }
     },
-    "/users/{userLogin}": {
+    "/users": {
       "get": {
         "summary": "Retrive User/s - GET endpoint",
-        "tags": [],
+        "tags": [
+          "Users"
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -365,17 +315,7 @@
         "operationId": "get-users",
         "description": "Get merchant users list or by get user by login"
       },
-      "parameters": [
-        {
-          "schema": {
-            "type": "string"
-          },
-          "name": "userLogin",
-          "in": "path",
-          "description": "User login name to by searched by.",
-          "style": "label"
-        }
-      ],
+      "parameters": [],
       "post": {
         "summary": "Create User - POST endpoint",
         "operationId": "post-users-userLogin",
@@ -486,7 +426,7 @@
         "description": "Unactivate User ."
       }
     },
-    "/auth/verify": {
+    "/auth/vLogin": {
       "post": {
         "summary": "Verify Login - POST endpoint",
         "operationId": "post-auth-verify",
@@ -499,7 +439,7 @@
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/response"
+                      "$ref": "#/components/schemas/BaseResponse"
                     },
                     {
                       "type": "object",
@@ -525,7 +465,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/response"
+                  "$ref": "#/components/schemas/BaseResponse"
                 }
               }
             }
@@ -534,13 +474,13 @@
         "tags": [
           "auth"
         ],
-        "description": "Verify login for new devices/terminal with OTP sent to users mobile.\nwhen user login from new devices/terminal system sent OTP SMS to their mobile,\nthen user use this OTP to verfiy login operation. ",
+        "description": "Verify login for new devices/terminal with OTP sent to users mobile.\n\n*when user login from new devices/terminal system sent OTP SMS to their mobile,\nthen user use this OTP to verfiy login operation.*",
         "security": [
           {
-            "term-info": []
+            "Termainl Info": []
           },
           {
-            "sess-info": []
+            "Session Info": []
           }
         ],
         "parameters": [],
@@ -553,10 +493,15 @@
                   "otp": {
                     "type": "string",
                     "description": "OTP which sent to user mobile as SMS "
+                  },
+                  "mode": {
+                    "type": "string",
+                    "description": "mode of verify (auto/background , manual)"
                   }
                 },
                 "required": [
-                  "otp"
+                  "otp",
+                  "mode"
                 ]
               }
             }
@@ -566,7 +511,7 @@
       },
       "parameters": []
     },
-    "/auth/verify-pin": {
+    "/auth/vPin": {
       "post": {
         "summary": "Verify PIN - POST endpoint",
         "operationId": "post-auth-v-pin",
@@ -611,7 +556,10 @@
           },
           "description": ""
         },
-        "description": "Verify Trans PIN."
+        "description": "Verify Trans PIN.",
+        "tags": [
+          "auth"
+        ]
       },
       "parameters": []
     },
@@ -766,35 +714,26 @@
         }
       ]
     },
-    "/auth/verify-resend": {
-      "get": {
-        "summary": "Verfiy-Resend -  GET endpoint",
-        "tags": [],
+    "/auth/vcResend": {
+      "parameters": [],
+      "post": {
+        "summary": "",
+        "operationId": "post-auth-vcResend",
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/response"
-                }
-              }
-            }
+            "description": "OK"
+          },
+          "401": {
+            "description": "Created"
           }
         },
-        "operationId": "get-auth-verify-resend",
-        "security": [
-          {
-            "term-info": []
-          },
-          {
-            "sess-info": []
-          }
-        ],
-        "description": "Resend Verify code OTP in case it wasn't received by user."
+        "description": "Verfiy Code Resend",
+        "tags": [
+          "auth"
+        ]
       }
     },
-    "/auth/rest-pass": {
+    "/auth/rePass": {
       "post": {
         "summary": "Reset Password - endpoint",
         "operationId": "post-auth-rest-pass",
@@ -831,10 +770,14 @@
               }
             }
           }
-        }
-      }
+        },
+        "tags": [
+          "auth"
+        ]
+      },
+      "parameters": []
     },
-    "/auth/change-pass": {
+    "/auth/chPass": {
       "post": {
         "summary": "Change Password - endpoint",
         "operationId": "post-auth-change-pass",
@@ -867,10 +810,13 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "auth"
+        ]
       }
     },
-    "/auth/change-pin": {
+    "/auth/chPin": {
       "post": {
         "summary": "Change PIN - endpoint",
         "operationId": "post-auth-change-pin",
@@ -903,13 +849,18 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "auth"
+        ]
       }
     },
-    "/mers/{merCode}": {
+    "/mer": {
       "get": {
-        "summary": "Get Merchant/s - endpoint",
-        "tags": [],
+        "summary": "Get Merchants - endpoint",
+        "tags": [
+          "Merchants"
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -918,7 +869,7 @@
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/response"
+                      "$ref": "#/components/schemas/BaseResponse"
                     },
                     {
                       "type": "object",
@@ -938,7 +889,7 @@
           }
         },
         "operationId": "get-mers",
-        "description": "Retrive merchants list.",
+        "description": "Retrive merchant Details or merchants list.",
         "parameters": [
           {
             "schema": {
@@ -963,88 +914,33 @@
             "in": "query",
             "name": "status",
             "description": "status to search merchant"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "in": "query",
+            "name": "lmt",
+            "description": "Number of page records "
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "in": "query",
+            "name": "offset",
+            "description": "number of page offset"
           }
         ]
       },
-      "parameters": [
-        {
-          "schema": {
-            "type": "string"
-          },
-          "name": "merCode",
-          "in": "path",
-          "required": true,
-          "description": "merchant code"
-        }
-      ],
-      "post": {
-        "summary": "",
-        "operationId": "post-mers-merCode",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/response"
-                }
-              }
-            }
-          }
-        },
-        "description": "Create Merchant",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Merchant"
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "Update Merchant - endpoint",
-        "operationId": "put-mers-merCode",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/response"
-                }
-              }
-            }
-          }
-        },
-        "description": "Update Merchant data",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "action": {
-                    "type": "string",
-                    "enum": [
-                      "enable",
-                      "disable",
-                      "restpin",
-                      "restpass"
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      "parameters": []
     },
     "/topup": {
       "get": {
         "summary": "Get Transactions - endpoint",
-        "tags": [],
+        "tags": [
+          "finiacial"
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1104,14 +1000,173 @@
           }
         ]
       }
+    },
+    "/mer/{merCode}": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "merCode",
+          "in": "path",
+          "required": true,
+          "description": "merchant code"
+        }
+      ],
+      "get": {
+        "summary": "Get Merchant Details - endpoint",
+        "tags": [
+          "Merchants"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "$ref": "#/components/schemas/Merchant"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-mers-merCode",
+        "description": "Get Merchant Details"
+      }
+    },
+    "/mer/create": {
+      "post": {
+        "summary": "Create Merchant - endpoint",
+        "operationId": "post-mer-create",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "$ref": "#/components/schemas/Merchant"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "create new merchant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Merchant"
+              }
+            }
+          },
+          "description": ""
+        }
+      }
+    },
+    "/mer/update": {
+      "put": {
+        "summary": "Update Merchant - endpoint",
+        "operationId": "put-mer-update",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Update merchant record",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Merchant"
+              }
+            }
+          },
+          "description": ""
+        },
+        "tags": [
+          "Merchants"
+        ]
+      }
     }
   },
   "components": {
     "schemas": {
-      "response": {
-        "title": "API Base Response",
+      "BaseResponse": {
+        "title": "Base Response",
         "type": "object",
-        "description": "every response from API will be in the same structuer.",
+        "description": "API base response model.",
+        "x-examples": {
+          "success-response": {
+            "rc": "0",
+            "rd": "bla bla balb"
+          },
+          "suspected-response": {
+            "rc": "-200",
+            "rd": "العملية قيد التاكيد، يرجى التحقق من حاله العمليه بعد عده ثواني",
+            "ca": 3000
+          },
+          "repeted-response": {
+            "rc": "-300",
+            "rd": "string",
+            "ca": 0
+          },
+          "failuer-response": {
+            "rc": "18",
+            "rd": "هذا الصنف غير مفعل",
+            "ca": 0
+          }
+        },
         "properties": {
           "rc": {
             "type": "string",
@@ -1123,60 +1178,24 @@
               "117",
               "60-69"
             ],
-            "description": "Response code as in artical [Response Codes]"
+            "description": "Response code, **0 means success**, other see artical [Respons Codes]"
           },
           "rd": {
             "type": "string",
             "description": "Response description"
           },
           "ca": {
-            "type": "string",
+            "type": "number",
             "description": "Control action, sent from server to be executed on terminal."
           }
         },
         "required": [
           "rc",
           "rd"
-        ],
-        "x-examples": {
-          "example-1": {
-            "rc": "0",
-            "rd": "string",
-            "ca": "string"
-          }
-        }
-      },
-      "response-fin-body": {
-        "title": "response-fin-body",
-        "type": "object",
-        "description": "internal response body, only for finicail requests.",
-        "properties": {
-          "trxId": {
-            "type": "string"
-          },
-          "trxCst": {
-            "type": "number"
-          },
-          "trxCcy": {
-            "type": "string"
-          },
-          "trxCcyRate": {
-            "type": "number"
-          },
-          "trxAcc": {
-            "type": "string"
-          },
-          "accBal": {
-            "type": "number"
-          }
-        },
-        "x-tags": [
-          "response",
-          "finiacial"
         ]
       },
-      "request": {
-        "title": "request",
+      "BaseRequest": {
+        "title": "BaseRequest",
         "type": "object",
         "x-examples": {
           "example-1": {
@@ -1233,28 +1252,14 @@
           "ac"
         ]
       },
-      "resp-body-signup": {
-        "title": "resp-body-signup",
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          }
-        }
-      },
-      "resp-body-get-users": {
-        "title": "resp-body-get-users",
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          }
-        }
-      },
-      "MerchantUser": {
-        "title": "MerchantUser",
+      "User": {
+        "title": "User",
         "type": "object",
         "description": "Merchant User Model",
+        "x-tags": [
+          "User",
+          "response"
+        ],
         "properties": {
           "useCode": {
             "type": "number",
@@ -1281,53 +1286,128 @@
             "type": "number"
           }
         },
-        "x-tags": [
-          "User",
-          "response"
+        "required": [
+          "useFName",
+          "useLogin",
+          "useIsActive"
         ]
       },
       "Merchant": {
         "title": "Merchant",
         "type": "object",
         "description": "Merchant Account Model",
+        "x-examples": {
+          "for-response": {
+            "merCode": 1023,
+            "merIden": "9103000010",
+            "merName": "سالم علي الصباج",
+            "merCName": "المجد تيك",
+            "merPhone1": "777690990",
+            "merPhone2": "778555521",
+            "merGrp": "عملاء الجنوب",
+            "merStatus": "فعال",
+            "merCity": "امانه العاصمة",
+            "merBal": 523330,
+            "merStDate": "2020-01-01",
+            "merDla": 3
+          },
+          "for-create-request": {
+            "merName": "سالم علي الصباج",
+            "merCName": "المجد تيك",
+            "merPhone1": "777690990",
+            "merPhone2": "778555521",
+            "merGrp": "عملاء الجنوب",
+            "merStatus": "فعال",
+            "merCity": "امانه العاصمة",
+            "merBal": 523330,
+            "merStDate": "2020-01-01",
+            "merDla": 2
+          },
+          "for-update-request": {
+            "merCode": 1023,
+            "merIden": "string",
+            "merName": "string",
+            "merCName": "string",
+            "merPhone1": "stringstr",
+            "merPhone2": "string",
+            "merStatus": 0,
+            "merCity": 0,
+            "merDla": 0
+          }
+        },
         "properties": {
           "merCode": {
             "type": "number"
           },
           "merIden": {
-            "type": "string"
+            "type": "string",
+            "description": "Merchant Iden."
           },
           "merName": {
-            "type": "string"
+            "type": "string",
+            "description": "Merchant full name."
           },
           "merCName": {
-            "type": "string"
+            "type": "string",
+            "description": "Merchant corp. name"
           },
           "merPhone1": {
-            "type": "string"
+            "type": "string",
+            "description": "Merchant primary mobile phone no.",
+            "pattern": "^[0-9]",
+            "minLength": 9,
+            "maxLength": 15
           },
           "merPhone2": {
-            "type": "string"
+            "type": "string",
+            "description": "Merchant secondry mobile phone no."
           },
           "merGrp": {
-            "type": "string"
+            "type": "string",
+            "description": "Merchant group"
           },
           "merStatus": {
-            "type": "string"
+            "type": "integer",
+            "description": "Merchant account status (active / inactive)"
           },
           "merCity": {
-            "type": "string"
+            "type": "integer",
+            "description": "Merchant city."
           },
           "merBal": {
-            "type": "number"
+            "type": "number",
+            "description": "Merchant current balance"
           },
           "merStDate": {
-            "type": "string"
+            "type": "string",
+            "description": "Merchant account start date"
+          },
+          "merDla": {
+            "type": "integer",
+            "description": "Merchant Distrabution layer (level of privilages)",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              0
+            ],
+            "example": 3,
+            "minimum": 0,
+            "maximum": 4,
+            "format": "int32"
           }
-        }
+        },
+        "required": [
+          "merName",
+          "merCName",
+          "merPhone1",
+          "merCity",
+          "merDla"
+        ]
       },
-      "TopupTransaction": {
-        "title": "TopupTransaction",
+      "TopupTrx": {
+        "title": "TopupTrx",
         "type": "object",
         "properties": {
           "traCode": {
@@ -1364,21 +1444,71 @@
             "type": "string"
           }
         }
+      },
+      "TerminalDevice": {
+        "title": "TerminalDevice",
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 64,
+            "description": "Terminal Device SerialNo/IMEI or Browser UUID. \nit must begin with prefix:\nif uuid > U\nif seril> S\nif IMEI > I",
+            "pattern": "^([I,U,S][A-Z a-z 0-9])"
+          },
+          "mod": {
+            "type": "string",
+            "description": "Terminal Device  Model."
+          },
+          "bra": {
+            "type": "string",
+            "description": "Terminal Device Brand."
+          },
+          "osy": {
+            "type": "string",
+            "description": "Terminal Device Operating System."
+          },
+          "osv": {
+            "type": "string",
+            "description": "Terminal Device OS version."
+          },
+          "lng": {
+            "type": "string",
+            "description": "Termminal device language."
+          },
+          "isRooted": {
+            "type": "boolean",
+            "description": "Is device rooted/jilyBreaked"
+          },
+          "md5": {
+            "type": "string",
+            "description": "md5 of all info. ex: (md5(uuid;mod;bra;.....etc)."
+          }
+        },
+        "required": [
+          "uuid",
+          "mod",
+          "bra",
+          "osy",
+          "osv",
+          "lng"
+        ]
       }
     },
     "securitySchemes": {
-      "Authorization": {
-        "type": "http",
-        "scheme": "bearer",
-        "description": "used to send authoriaztion token"
+      "Auth. Token": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "auth-token",
+        "description": "vvvvvvvvvvvvvv"
       },
-      "term-info": {
+      "Termainl Info": {
         "name": "term-info",
         "type": "apiKey",
         "in": "header",
         "description": "must sent with every request and will contian app uniqe info (appId +':'+ appVersion +':'+ termType)"
       },
-      "sess-info": {
+      "Session Info": {
         "name": "sess-info",
         "type": "apiKey",
         "in": "header",
@@ -1388,13 +1518,13 @@
   },
   "security": [
     {
-      "Authorization": []
+      "Auth. Token": []
     },
     {
-      "term-info": []
+      "Termainl Info": []
     },
     {
-      "sess-info": []
+      "Session Info": []
     }
   ],
   "tags": [
@@ -1406,6 +1536,15 @@
     },
     {
       "name": "auth"
+    },
+    {
+      "name": "Merchants"
+    },
+    {
+      "name": "finiacial"
+    },
+    {
+      "name": "Users"
     }
   ]
 }
