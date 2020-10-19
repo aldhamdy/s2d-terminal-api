@@ -281,9 +281,6 @@
     "/users": {
       "get": {
         "summary": "Retrive User/s - GET endpoint",
-        "tags": [
-          "Users"
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -313,7 +310,10 @@
           }
         },
         "operationId": "get-users",
-        "description": "Get merchant users list or by get user by login"
+        "description": "Get merchant users list or by get user by login",
+        "tags": [
+          "User"
+        ]
       },
       "parameters": [],
       "post": {
@@ -380,7 +380,10 @@
             }
           },
           "description": "User data object, all fileds required except (useCode and useUsedLmt)."
-        }
+        },
+        "tags": [
+          "User"
+        ]
       },
       "put": {
         "summary": "Update User - PUT endpoint",
@@ -406,7 +409,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "User"
+        ]
       },
       "delete": {
         "summary": "UnActivate User - DEL endpoint",
@@ -423,7 +429,10 @@
             }
           }
         },
-        "description": "Unactivate User ."
+        "description": "Unactivate User .",
+        "tags": [
+          "User"
+        ]
       }
     },
     "/auth/vLogin": {
@@ -1094,7 +1103,10 @@
             }
           },
           "description": ""
-        }
+        },
+        "tags": [
+          "Merchants"
+        ]
       }
     },
     "/mer/update": {
@@ -1544,7 +1556,7 @@
       "name": "finiacial"
     },
     {
-      "name": "Users"
+      "name": "User"
     }
   ]
 }
