@@ -575,7 +575,9 @@
     "/profile/{profileCheckSum}": {
       "get": {
         "summary": "Termainl User Profile - GET endpoint",
-        "tags": [],
+        "tags": [
+          "profile"
+        ],
         "responses": {
           "200": {
             "description": "Accepted",
@@ -1150,6 +1152,53 @@
           "Merchants"
         ]
       }
+    },
+    "/ope": {
+      "post": {
+        "summary": "",
+        "operationId": "post-ope",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "sjkf;laskdjf;lkjf",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "in": "header",
+            "name": "sal",
+            "description": "sd;klf;laskdj;flkjasdf",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "amt": {
+                    "type": "number"
+                  },
+                  "": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1224,40 +1273,6 @@
           "ac": {
             "type": "string",
             "description": "Action Code aka operation id"
-          },
-          "tt": {
-            "type": "string",
-            "enum": [
-              "WAPP",
-              "AAPP",
-              "IAPP",
-              "POS",
-              "SYS"
-            ],
-            "description": "Terminal Type (web app, android app, ios, POS device or 3rd-Partiy System)"
-          },
-          "ti": {
-            "type": "string",
-            "description": "Terminal Iden (got from server for uniqe termanil )"
-          },
-          "ai": {
-            "type": "string",
-            "description": "Company App Iden"
-          },
-          "av": {
-            "type": "string",
-            "description": "App Version name ex. 1.1.1"
-          },
-          "un": {
-            "type": "string",
-            "description": "User name"
-          },
-          "up": {
-            "description": "User Password",
-            "oneOf": [
-              {}
-            ],
-            "type": "object"
           }
         },
         "required": [
@@ -1419,17 +1434,15 @@
         ]
       },
       "TopupTrx": {
-        "title": "TopupTrx",
+        "title": "TopupTrxView",
         "type": "object",
         "properties": {
           "traCode": {
             "type": "string"
           },
           "traDate": {
-            "type": "string"
-          },
-          "traTco": {
-            "type": "string"
+            "type": "string",
+            "description": "Tran Date"
           },
           "traOpe": {
             "type": "string"
@@ -1453,6 +1466,9 @@
             "type": "string"
           },
           "traSub": {
+            "type": "string"
+          },
+          "traTco": {
             "type": "string"
           }
         }
@@ -1505,6 +1521,141 @@
           "osv",
           "lng"
         ]
+      },
+      "TranRequest": {
+        "description": "",
+        "type": "object",
+        "properties": {
+          "tco": {
+            "type": "number"
+          },
+          "tda": {
+            "type": "object",
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "itm": {
+                "type": "number"
+              },
+              "amt": {
+                "type": "number"
+              },
+              "cst": {
+                "type": "number"
+              },
+              "den": {
+                "type": "string"
+              },
+              "rem": {
+                "type": "string",
+                "minLength": 1
+              },
+              "pri": {
+                "type": "number"
+              },
+              "ccy": {
+                "type": "string",
+                "minLength": 1
+              },
+              "fee": {
+                "type": "number"
+              },
+              "tot": {
+                "type": "number"
+              },
+              "sen": {
+                "type": "string",
+                "minLength": 1
+              },
+              "spc": {
+                "type": "object",
+                "properties": {},
+                "required": []
+              }
+            },
+            "required": [
+              "ref",
+              "itm",
+              "amt",
+              "cst",
+              "den",
+              "rem",
+              "pri",
+              "ccy",
+              "fee",
+              "tot",
+              "sen",
+              "spc"
+            ]
+          },
+          "tac": {
+            "type": "object",
+            "properties": {
+              "acc": {
+                "type": "string",
+                "minLength": 1
+              },
+              "exr": {
+                "type": "number"
+              },
+              "amt": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "acc",
+              "exr",
+              "amt"
+            ]
+          },
+          "sndr": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "rcvr": {
+            "type": "object",
+            "properties": {
+              "acc": {
+                "type": "string",
+                "minLength": 1
+              },
+              "amt": {
+                "type": "number"
+              },
+              "ccy": {
+                "type": "string",
+                "minLength": 1
+              },
+              "pam": {
+                "type": "string",
+                "minLength": 1
+              },
+              "info": {
+                "type": "object",
+                "properties": {},
+                "required": []
+              }
+            },
+            "required": [
+              "acc",
+              "amt",
+              "ccy",
+              "pam",
+              "info"
+            ]
+          }
+        },
+        "required": [
+          "tco",
+          "tda",
+          "tac",
+          "sndr",
+          "rcvr"
+        ],
+        "title": ""
       }
     },
     "securitySchemes": {
@@ -1557,6 +1708,9 @@
     },
     {
       "name": "User"
+    },
+    {
+      "name": "profile"
     }
   ]
 }
