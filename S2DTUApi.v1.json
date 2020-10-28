@@ -586,7 +586,7 @@
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/response"
+                      "$ref": "#/components/schemas/BaseResponse"
                     },
                     {
                       "type": "object",
