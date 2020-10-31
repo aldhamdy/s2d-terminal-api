@@ -1,9 +1,7 @@
 ---
 tags: [response]
 ---
-
-# Response Codes (`rc`)
-
+# API Response
 Document to explian the response code of API
 <!-- theme: info -->
 > ***S2D Platform API had a unified response structure.***
@@ -38,16 +36,23 @@ Every API response is a JSON object that has the following items:
 ```
 #
 
+#### 1. Response Codes (`rc`) :
+ **Cesponse code (`rc`)** is the status of the request procesing, which indecate if request was processed successfuly or with failuers.
 
-> **Cesponse code (`rc`)** is the status of the request procesing status.
 >if `rc = 0`  that is mean request **Success**, otherwise request **Failed.**
 <!-- theme: warning -->
 > **Response code**  **`-200`** is a spicial response value indecating that payment request was sent to payment gateway but, server coul'd not get a clear status from gateway, so system decided to hold the transaction and inform user that he/she must check status after some time to get a final status.
 
-> **Control Action `ca`** is action code sent from server to be executed on app, app must check in every response for value of this param and execute the action.
-
->**Response Body `rb`** is the spicific response body (inner body), and it's optional.
 #
+#### 2. Control Action (`ca`) :
+
+**Control Action `ca`** is an action code sent from server to be executed on app, app must check in every response for value of this param and execute the action.
+#
+#### 3. Response Body (`rb`) :
+**Response Body `rb`** is the spicific response body (inner body), and it's optional.
+
+#
+
 ### Examples
 
 <!-- type: tab

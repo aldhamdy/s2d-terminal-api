@@ -2002,7 +2002,6 @@
               "$ref": "#/components/schemas/TransactionCode"
             }
           },
-          
           "acc": {
             "$ref": "#/components/schemas/Merchant"
           },
