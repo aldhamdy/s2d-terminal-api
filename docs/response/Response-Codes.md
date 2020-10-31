@@ -50,10 +50,43 @@ Every API response is a JSON object that has the following items:
 #
 ### Examples
 
+<!-- type: tab
+title: Success Response
+-->
+```json
+{
+  "rc" : "0", //success response
+  "rd" : "Request processed successfuly",
+  "ca" : 0, // o means no action required
+  "rb" : // in case there is data returned from server it will be here
+  [
+    {
+      "useCode": 1233,
+      "useName": "صلاح محمد احمد",
+      "useLogin": "774463333",
+      ...
+
+    }
+  ]
+}
+```
+<!-- type: tab
+title: Failure Response
+-->
+```json
+{
+  "rc" : "32", //error 
+  "rd" : "User name or password not correct",
+  "ca" : 0, // o means no action required
+  // rb: null -- if there is no body value , body item will be removed.
+}
+```
+<!-- type: tab-end -->
 #
+
 ### List Of Response Codes 
 These are the reponses needed interaction from developer
-
+<!-- title: List Of Response Codes -->
 Code | Desc | Required Action | Notes
 ---------|----------|---------|------
  0 | Request Success | Inform User with success state||
