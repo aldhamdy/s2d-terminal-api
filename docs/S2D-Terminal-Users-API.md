@@ -1,3 +1,3 @@
-# S2D-Terminal-Users-API
+# S2D Terminal Users API
 
 The beginning of an awesome article...
