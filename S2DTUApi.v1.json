@@ -1082,7 +1082,7 @@
     },
     "/payment": {
       "get": {
-        "summary": "Get Transactions - endpoint",
+        "summary": "Transactions - endpoint",
         "responses": {
           "200": {
             "description": "OK",
@@ -1091,7 +1091,7 @@
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/response"
+                      "$ref": "#/components/schemas/BaseResponse"
                     },
                     {
                       "type": "object",
@@ -1099,7 +1099,7 @@
                         "rb": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/TopupTransaction"
+                            "$ref": "#/components/schemas/PaymentOrder"
                           }
                         }
                       }
@@ -1145,7 +1145,37 @@
           "Payment"
         ]
       },
-      "parameters": []
+      "parameters": [],
+      "post": {
+        "summary": "Create Payment Order - endpoint",
+        "operationId": "post-payment",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "Create Service Payment Order",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentOrder"
+              }
+            }
+          }
+        }
+      }
     },
     "/merchant/{merCode}": {
       "parameters": [
@@ -1472,7 +1502,30 @@
         "tags": [
           "Transfare"
         ],
-        "responses": {},
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "$ref": "#/components/schemas/TransfareOrder"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
         "operationId": "get-transafer",
         "description": "fetch transfare orders",
         "parameters": [
