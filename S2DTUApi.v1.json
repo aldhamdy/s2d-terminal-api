@@ -24,7 +24,7 @@
     }
   ],
   "paths": {
-    "/init": {
+    "/public/init": {
       "get": {
         "summary": "Global App Inite - endpoint",
         "tags": [
@@ -670,7 +670,7 @@
       },
       "parameters": []
     },
-    "/profile/{profileCheckSum}": {
+    "/me/profile/{profileCheckSum}": {
       "get": {
         "summary": "Termainl User Profile - GET endpoint",
         "tags": [
@@ -976,7 +976,7 @@
         ]
       }
     },
-    "/mer": {
+    "/merchant": {
       "get": {
         "summary": "Get Merchants list - endpoint",
         "tags": [
@@ -1062,7 +1062,7 @@
               "default": 1
             },
             "in": "query",
-            "name": "po",
+            "name": "of",
             "description": "number of page offset",
             "required": true
           },
@@ -1080,12 +1080,9 @@
       },
       "parameters": []
     },
-    "/topup": {
+    "/payment": {
       "get": {
         "summary": "Get Transactions - endpoint",
-        "tags": [
-          "finiacial"
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1143,10 +1140,14 @@
             "in": "query",
             "name": "ope"
           }
+        ],
+        "tags": [
+          "Payment"
         ]
-      }
+      },
+      "parameters": []
     },
-    "/mer/{merCode}": {
+    "/merchant/{merCode}": {
       "parameters": [
         {
           "schema": {
@@ -1214,7 +1215,7 @@
         "description": "Get Merchant Details by code"
       }
     },
-    "/mer/create": {
+    "/merchant/create": {
       "post": {
         "summary": "Create Merchant - endpoint",
         "operationId": "post-mer-create",
@@ -1256,9 +1257,10 @@
         "tags": [
           "Merchants"
         ]
-      }
+      },
+      "parameters": []
     },
-    "/mer/update": {
+    "/merchant/update": {
       "put": {
         "summary": "Update Merchant - endpoint",
         "operationId": "put-mer-update",
@@ -1298,9 +1300,10 @@
         "tags": [
           "Merchants"
         ]
-      }
+      },
+      "parameters": []
     },
-    "/mer/suspend": {
+    "/merchant/suspend": {
       "post": {
         "summary": "Suspend Merchant - endpoint",
         "operationId": "post-mer-suspend",
@@ -1347,9 +1350,10 @@
         "tags": [
           "Merchants"
         ]
-      }
+      },
+      "parameters": []
     },
-    "/mer/activate": {
+    "/merchant/activate": {
       "post": {
         "summary": "Activate Merchant - endpoint",
         "operationId": "post-mer-activate",
@@ -1396,6 +1400,200 @@
         "tags": [
           "Merchants"
         ]
+      },
+      "parameters": []
+    },
+    "/public/lovs/{listCode}": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "listCode",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "get": {
+        "summary": "Get LOVs Data- endpoint",
+        "tags": [
+          "Public"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "type": "object",
+                          "properties": {
+                            "lcode": {
+                              "type": "string"
+                            },
+                            "llabel": {
+                              "type": "string"
+                            },
+                            "lnotes": {
+                              "type": "string"
+                            },
+                            "lstatus": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-public-lovs-listCode",
+        "description": "Retrive LOVs (list of values) lists data, ex. cities, countries, ...etc",
+        "security": [
+          {
+            "Termainl Info": []
+          }
+        ]
+      }
+    },
+    "/transafer": {
+      "get": {
+        "summary": "List Transfare Trans - endpoint",
+        "tags": [
+          "Transfare"
+        ],
+        "responses": {},
+        "operationId": "get-transafer",
+        "description": "fetch transfare orders",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "type",
+            "description": "by Transfare type"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "status",
+            "description": "by status"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "dr",
+            "description": "by debit account"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "cr",
+            "description": "by credit account"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "df",
+            "description": "date from"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "dt",
+            "description": "date to"
+          }
+        ]
+      },
+      "post": {
+        "summary": "Transfare Payment - endpoint",
+        "operationId": "post-transafer",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "rb": {
+                          "type": "object",
+                          "properties": {
+                            "trx_id": {
+                              "type": "string"
+                            },
+                            "trx_status": {
+                              "type": "string"
+                            },
+                            "trx_date": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransfareOrder"
+              }
+            }
+          },
+          "description": ""
+        },
+        "description": "Create Transfare payment order."
       }
     }
   },
@@ -1691,46 +1889,6 @@
           "merAddress1"
         ]
       },
-      "TopupTrx": {
-        "title": "TopupTrxView",
-        "type": "object",
-        "properties": {
-          "traCode": {
-            "type": "string"
-          },
-          "traDate": {
-            "type": "string",
-            "description": "Tran Date"
-          },
-          "traOpe": {
-            "type": "string"
-          },
-          "traOse": {
-            "type": "string"
-          },
-          "traIte": {
-            "type": "string"
-          },
-          "traDen": {
-            "type": "string"
-          },
-          "traAmt": {
-            "type": "string"
-          },
-          "traCst": {
-            "type": "string"
-          },
-          "traSt": {
-            "type": "string"
-          },
-          "traSub": {
-            "type": "string"
-          },
-          "traTco": {
-            "type": "string"
-          }
-        }
-      },
       "Terminal": {
         "title": "Terminal",
         "type": "object",
@@ -1789,141 +1947,6 @@
             "isRooted": true
           }
         }
-      },
-      "TranRequest": {
-        "description": "",
-        "type": "object",
-        "properties": {
-          "tco": {
-            "type": "number"
-          },
-          "tda": {
-            "type": "object",
-            "properties": {
-              "ref": {
-                "type": "string",
-                "minLength": 1
-              },
-              "itm": {
-                "type": "number"
-              },
-              "amt": {
-                "type": "number"
-              },
-              "cst": {
-                "type": "number"
-              },
-              "den": {
-                "type": "string"
-              },
-              "rem": {
-                "type": "string",
-                "minLength": 1
-              },
-              "pri": {
-                "type": "number"
-              },
-              "ccy": {
-                "type": "string",
-                "minLength": 1
-              },
-              "fee": {
-                "type": "number"
-              },
-              "tot": {
-                "type": "number"
-              },
-              "sen": {
-                "type": "string",
-                "minLength": 1
-              },
-              "spc": {
-                "type": "object",
-                "properties": {},
-                "required": []
-              }
-            },
-            "required": [
-              "ref",
-              "itm",
-              "amt",
-              "cst",
-              "den",
-              "rem",
-              "pri",
-              "ccy",
-              "fee",
-              "tot",
-              "sen",
-              "spc"
-            ]
-          },
-          "tac": {
-            "type": "object",
-            "properties": {
-              "acc": {
-                "type": "string",
-                "minLength": 1
-              },
-              "exr": {
-                "type": "number"
-              },
-              "amt": {
-                "type": "number"
-              }
-            },
-            "required": [
-              "acc",
-              "exr",
-              "amt"
-            ]
-          },
-          "sndr": {
-            "type": "object",
-            "properties": {},
-            "required": []
-          },
-          "rcvr": {
-            "type": "object",
-            "properties": {
-              "acc": {
-                "type": "string",
-                "minLength": 1
-              },
-              "amt": {
-                "type": "number"
-              },
-              "ccy": {
-                "type": "string",
-                "minLength": 1
-              },
-              "pam": {
-                "type": "string",
-                "minLength": 1
-              },
-              "info": {
-                "type": "object",
-                "properties": {},
-                "required": []
-              }
-            },
-            "required": [
-              "acc",
-              "amt",
-              "ccy",
-              "pam",
-              "info"
-            ]
-          }
-        },
-        "required": [
-          "tco",
-          "tda",
-          "tac",
-          "sndr",
-          "rcvr"
-        ],
-        "title": ""
       },
       "AppProfile": {
         "description": "App profile model",
@@ -2201,6 +2224,220 @@
           "tcoCode",
           "tcoIsFin"
         ]
+      },
+      "PaymentOrder": {
+        "title": "PaymentOrder",
+        "type": "object",
+        "description": "Payment Order Details Model",
+        "x-tags": [
+          "Payment"
+        ],
+        "x-examples": {},
+        "properties": {
+          "tco": {
+            "type": "number",
+            "description": "Order Tran code (type of payment transaction),\nget it from profile -> tco -> tco_code  "
+          },
+          "t_ref": {
+            "type": "string",
+            "description": "Uniqe order ref "
+          },
+          "service": {
+            "type": "object",
+            "required": [
+              "ope",
+              "itm",
+              "den",
+              "cst",
+              "sty"
+            ],
+            "properties": {
+              "ope": {
+                "type": "integer",
+                "description": "Service Operator code ( from profile opes object)"
+              },
+              "itm": {
+                "type": "integer",
+                "description": "Service Item code ( from profile items object)"
+              },
+              "den": {
+                "type": "integer",
+                "description": "Item specific denomation (bundle). "
+              },
+              "cst": {
+                "type": "number",
+                "description": "Transaction Cost in tran currency."
+              },
+              "sty": {
+                "type": "integer",
+                "description": "Service type. ex:(9001, 9002, ...etc)"
+              }
+            }
+          },
+          "t_amt": {
+            "type": "number",
+            "description": "Order payment amount"
+          },
+          "t_cur": {
+            "type": "string",
+            "description": "transaction currency code",
+            "default": "YER",
+            "enum": [
+              "YER",
+              "USD",
+              "SAR",
+              "AUE",
+              "ERU"
+            ],
+            "minLength": 3,
+            "maxLength": 3,
+            "deprecated": true
+          },
+          "t_fee": {
+            "type": "number",
+            "description": "Order Fee in tran currency"
+          },
+          "rem": {
+            "type": "string",
+            "description": "Transaction remarks"
+          },
+          "sub_act": {
+            "type": "string",
+            "description": "Sub Action to perform on transaction on server"
+          },
+          "mer_acc": {
+            "type": "string",
+            "description": "Order debit merchant account ex.(user wallet iden)"
+          },
+          "ex_rate": {
+            "type": "number",
+            "description": "exchange rate from tran currancy (t_cur) to account currency (acc_cur)"
+          },
+          "tot_cst": {
+            "type": "number",
+            "description": "Order Total Cost in account currency.\ntot_cst = ((t_amt * t_cst ) + t_fee) * ex_rate"
+          },
+          "de_me": {
+            "type": "string",
+            "description": "Order delivery methoad",
+            "deprecated": true
+          },
+          "sub": {
+            "type": "object",
+            "description": "Receipent info",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Receipent account ( subscriber no/id)"
+              },
+              "type": {
+                "type": "string",
+                "description": "Receipent account type ( subscriber type). ex: (postPaid ...etc)"
+              },
+              "detail": {
+                "type": "string",
+                "deprecated": true
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "ref_info": {
+            "type": "object",
+            "description": "Order reference info as per user requirment for taging",
+            "deprecated": true,
+            "properties": {
+              "pri": {
+                "type": "string",
+                "description": "Sale price ( only for reference )",
+                "deprecated": true
+              },
+              "pa_me": {
+                "type": "string",
+                "description": "payment method (cash / ...)",
+                "deprecated": true
+              },
+              "cus_info": {
+                "type": "string",
+                "description": "customer of user info .",
+                "deprecated": true
+              }
+            }
+          }
+        },
+        "required": [
+          "tco",
+          "t_ref",
+          "service",
+          "t_amt",
+          "mer_acc",
+          "tot_cst"
+        ]
+      },
+      "TransfareOrder": {
+        "title": "TransfareOrder",
+        "type": "object",
+        "properties": {
+          "tco": {
+            "type": "integer",
+            "description": "Transaction code (Transfare Tran Type)"
+          },
+          "t_ref": {
+            "type": "string",
+            "description": "Unique Tran ref"
+          },
+          "t_amt": {
+            "type": "number",
+            "description": "Tran amount"
+          },
+          "t_cur": {
+            "type": "string",
+            "description": "Tran Currency"
+          },
+          "t_typ": {
+            "type": "integer",
+            "description": "Transfare type (fund, refund, comission, ...etc) code"
+          },
+          "t_fee": {
+            "type": "number",
+            "description": "Tran Fees "
+          },
+          "tot_cst": {
+            "type": "number",
+            "description": "Total Transfare cost (Debit amount).\n= (t_amt + t_fee) * ex_rate."
+          },
+          "ex_rate": {
+            "type": "number",
+            "description": "Exchange rate from tran curr to acc curr"
+          },
+          "dr_acc": {
+            "type": "string",
+            "description": "Debit account ( sender account)"
+          },
+          "cr_acc": {
+            "type": "string",
+            "description": "Credit account ( receipent account)"
+          },
+          "rem": {
+            "type": "string",
+            "description": "Remarks"
+          },
+          "o_ref": {
+            "type": "string",
+            "description": "any addational data provided by user as ref"
+          }
+        },
+        "required": [
+          "tco",
+          "t_ref",
+          "t_amt",
+          "t_typ",
+          "tot_cst",
+          "dr_acc",
+          "cr_acc"
+        ],
+        "description": "Transfare Order Details Model"
       }
     },
     "securitySchemes": {
@@ -2246,9 +2483,6 @@
       "name": "Merchants"
     },
     {
-      "name": "finiacial"
-    },
-    {
       "name": "User"
     },
     {
@@ -2256,6 +2490,15 @@
     },
     {
       "name": "Authentication"
+    },
+    {
+      "name": "Public"
+    },
+    {
+      "name": "Payment"
+    },
+    {
+      "name": "Transfare"
     }
   ]
 }
