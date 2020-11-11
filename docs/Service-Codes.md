@@ -9,9 +9,14 @@ there is multipal types and catagory for service offered by S2D.
 
 Code | Operator Compnay| Category |Country| Currancy|
 ---------|----------|---------|-----|------|-----|
- 42101 | Yemen Mobile Compnay | Mobile Telecom|YEMEN|YER|
- 42102 | Sabafone Company | Mobile Telecom|YEMEN|YER|
- 42103 | MTN Yemen Company | Mobile Telecom|YEMEN|YER|
- 42104|Y Company | Mobile Telecom|YEMEN|YER|
-
+ 42101 | Yemen Mobile | Mobile Telecom|YEMEN|YER|
+ 42102 | Sabafone| Mobile Telecom|YEMEN|YER|
+ 42103 | MTN | Mobile Telecom|YEMEN|YER|
+ 42104|Y | Mobile Telecom|YEMEN|YER|
+ 42105|ADSL | Utility|YEMEN|YER|
+ 42106|Land Line| Utility|YEMEN|YER|
+ 42107|Water Bills |Utility |YEMEN|YER|
+ 42108|Electrocity Bills | Utility|YEMEN|YER|
+42109|Mizzabi | Entertiment|YEMEN|YER|
+42110|Pubg| Entertiment|YEMEN|YER|
 

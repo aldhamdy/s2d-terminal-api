@@ -1082,7 +1082,7 @@
     },
     "/payment": {
       "get": {
-        "summary": "Transactions - endpoint",
+        "summary": "Payment - Get endpoint",
         "responses": {
           "200": {
             "description": "OK",
@@ -1143,7 +1143,8 @@
         ],
         "tags": [
           "Payment"
-        ]
+        ],
+        "description": "Retrive Payment transactions list"
       },
       "parameters": [],
       "post": {
@@ -1170,7 +1171,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PaymentOrder"
+                "$ref": "#/components/schemas/PaymentRequest"
               }
             }
           }
@@ -1719,6 +1720,10 @@
           "ca": {
             "type": "number",
             "description": "Control action, sent from server to be executed on terminal."
+          },
+          "trx": {
+            "type": "string",
+            "description": "Transaction code from the system.\n\n_usualy returned in payments/transfare/sales requests only_"
           }
         },
         "required": [
@@ -2211,7 +2216,10 @@
           "iteMamAmt",
           "iteStyCode"
         ],
-        "description": ""
+        "description": "",
+        "x-tags": [
+          "profile"
+        ]
       },
       "Denom": {
         "title": "Denom",
@@ -2223,7 +2231,7 @@
           },
           "denId": {
             "type": "string",
-            "description": "den iden (used when send request to server)"
+            "description": "Denom Iden, used to display for user in toppup payment only"
           },
           "denName": {
             "type": "string",
@@ -2254,6 +2262,9 @@
           "denUnit",
           "denPrice",
           "denDesc"
+        ],
+        "x-tags": [
+          "profile"
         ]
       },
       "TransactionCode": {
@@ -2276,221 +2287,306 @@
         "required": [
           "tcoCode",
           "tcoIsFin"
+        ],
+        "x-tags": [
+          "profile"
         ]
       },
-      "PaymentOrder": {
-        "title": "PaymentOrder",
+      "PaymentRequest": {
+        "title": "Payment Request",
         "type": "object",
-        "description": "Payment Order Details Model",
+        "description": "Payment request Model",
         "x-tags": [
           "Payment"
         ],
-        "x-examples": {},
+        "x-examples": {
+          "topup-payment-example": {
+            "tco": 7100,
+            "ref": "231231",
+            "order": {
+              "itm": 11,
+              "amt": 1200,
+              "cst": 1200
+            },
+            "recip": {
+              "id": "777690990"
+            },
+            "rem": "سداد يمن موبايل",
+            "acc": "991000022"
+          },
+          "offer-payment-example": {
+            "tco": 7200,
+            "ref": "788823",
+            "order": {
+              "itm": 13,
+              "den": 73103,
+              "amt": 410,
+              "cst": 482,
+              "sub_act": "n"
+            },
+            "recip": {
+              "id": "733333333",
+              "ty": "1"
+            },
+            "rem": "سداد باقه سمارت نت MTN",
+            "acc": "99013333333"
+          }
+        },
         "properties": {
           "tco": {
             "type": "number",
-            "description": "Order Tran code (type of payment transaction),\nget it from profile -> tco -> tco_code  "
-          },
-          "t_ref": {
-            "type": "string",
-            "description": "Uniqe order ref "
-          },
-          "service": {
-            "type": "object",
-            "required": [
-              "ope",
-              "itm",
-              "den",
-              "cst",
-              "sty"
-            ],
-            "properties": {
-              "ope": {
-                "type": "integer",
-                "description": "Service Operator code ( from profile opes object)"
-              },
-              "itm": {
-                "type": "integer",
-                "description": "Service Item code ( from profile items object)"
-              },
-              "den": {
-                "type": "integer",
-                "description": "Item specific denomation (bundle). "
-              },
-              "cst": {
-                "type": "number",
-                "description": "Transaction Cost in tran currency."
-              },
-              "sty": {
-                "type": "integer",
-                "description": "Service type. ex:(9001, 9002, ...etc)"
-              }
-            }
-          },
-          "t_amt": {
-            "type": "number",
-            "description": "Order payment amount"
-          },
-          "t_cur": {
-            "type": "string",
-            "description": "transaction currency code",
-            "default": "YER",
+            "description": "Tran Code, type of payment transaction.\n\n_get it from profile>> tco>> tco_code_",
             "enum": [
-              "YER",
-              "USD",
-              "SAR",
-              "AUE",
-              "ERU"
-            ],
-            "minLength": 3,
-            "maxLength": 3,
-            "deprecated": true
+              7100,
+              7200,
+              7500,
+              7600
+            ]
           },
-          "t_fee": {
-            "type": "number",
-            "description": "Order Fee in tran currency"
-          },
-          "rem": {
+          "ref": {
             "type": "string",
-            "description": "Transaction remarks"
+            "description": "Tran Reference, is the reference sent from the client system for tracking porpuse.\n\n_`ref` must be unique for every request_"
           },
-          "sub_act": {
-            "type": "string",
-            "description": "Sub Action to perform on transaction on server"
+          "order": {
+            "$ref": "#/components/schemas/Order"
           },
-          "mer_acc": {
-            "type": "string",
-            "description": "Order debit merchant account ex.(user wallet iden)"
-          },
-          "ex_rate": {
-            "type": "number",
-            "description": "exchange rate from tran currancy (t_cur) to account currency (acc_cur)"
-          },
-          "tot_cst": {
-            "type": "number",
-            "description": "Order Total Cost in account currency.\ntot_cst = ((t_amt * t_cst ) + t_fee) * ex_rate"
-          },
-          "de_me": {
-            "type": "string",
-            "description": "Order delivery methoad",
-            "deprecated": true
-          },
-          "sub": {
+          "recip": {
             "type": "object",
             "description": "Receipent info",
+            "required": [
+              "id"
+            ],
             "properties": {
               "id": {
                 "type": "string",
-                "description": "Receipent account ( subscriber no/id)"
+                "description": "**Payment receipent**, the ID/Code/No of the receipent/subscriber to credited/send with amount or bundel. "
               },
-              "type": {
+              "ty": {
                 "type": "string",
-                "description": "Receipent account type ( subscriber type). ex: (postPaid ...etc)"
+                "description": "**Receipent account type**, the receipent account type code.\n\n_mostly used with mobile telcom payments_"
               },
-              "detail": {
+              "nm": {
                 "type": "string",
-                "deprecated": true
+                "description": "**Receipent Name**, the receipent/customer name to be saved in the transaction record for reference only."
               }
+            }
+          },
+          "extra_info": {
+            "type": "object",
+            "description": "Extra data sent from user for tran refrences only.",
+            "properties": {
+              "sp": {
+                "type": "number",
+                "description": "**Sales price**, the amount that was taken from the customer."
+              },
+              "pm": {
+                "type": "string",
+                "description": "**Payment method**, method of payment used in this tran ex. cash, remittence, bank tran ...etc."
+              },
+              "ref": {
+                "type": "string",
+                "description": "**Reference**, extra reference .\n\n_Most of the times it is used to record voucher number_"
+              }
+            }
+          },
+          "rem": {
+            "type": "string",
+            "description": "**Tran Remarks**"
+          },
+          "acc": {
+            "type": "string",
+            "description": "**Tran Account**, merchant account iden whic will be debited for the payment cost."
+          }
+        },
+        "required": [
+          "tco",
+          "ref",
+          "order",
+          "recip",
+          "acc"
+        ]
+      },
+      "TransfareRequest": {
+        "description": "",
+        "type": "object",
+        "title": "Transfare Request",
+        "x-examples": {
+          "transfare-example": {
+            "tco": 7700,
+            "ref": "234234234",
+            "amt": 100000,
+            "cur": "YER",
+            "typ": 1001,
+            "fee": 100,
+            "cst": 100100,
+            "recip": {
+              "id": "string",
+              "nm": "string"
             },
-            "required": [
-              "id"
+            "rem": "string",
+            "acc": "string",
+            "extra_info": {
+              "ref": "string",
+              "notes": "string"
+            }
+          }
+        },
+        "properties": {
+          "tco": {
+            "type": "number",
+            "description": "Tran Code, type of payment transaction.\n\n_get it from profile>> tco>> tco_code_",
+            "enum": [
+              7100,
+              7200,
+              7500,
+              7600
             ]
           },
-          "ref_info": {
+          "ref": {
+            "type": "string",
+            "description": "Tran Reference, is the reference sent from the client system for tracking porpuse.\n\n_`ref` must be unique for every request_"
+          },
+          "amt": {
+            "type": "number",
+            "description": "**Tranfare amount**, the fund amount to be transfared ."
+          },
+          "cur": {
+            "type": "string",
+            "minLength": 1,
+            "description": "**Amount Currency**, the amount currency"
+          },
+          "typ": {
+            "description": "**Tran Type**, the trans type code.",
+            "type": "string"
+          },
+          "fee": {
+            "type": "number",
+            "description": "**Fee**, the fees amount applied for this trans and will be debited from tran account."
+          },
+          "cst": {
+            "type": "number",
+            "description": "**Trans cost**, the total amount that will be debited from tran account.\n\n**Cost (cst)** is calculated as following :\n```\nCost = (amt x exchange_rate) + fee\n```"
+          },
+          "recip": {
             "type": "object",
-            "description": "Order reference info as per user requirment for taging",
-            "deprecated": true,
+            "required": [
+              "id"
+            ],
             "properties": {
-              "pri": {
+              "id": {
                 "type": "string",
-                "description": "Sale price ( only for reference )",
-                "deprecated": true
+                "minLength": 1,
+                "description": "**Receipent Id**, receipent account id which will be credited with the amount."
               },
-              "pa_me": {
+              "nm": {
+                "type": "string"
+              }
+            }
+          },
+          "rem": {
+            "type": "string",
+            "description": "**Tran Remarks**, any remarks or notes"
+          },
+          "acc": {
+            "type": "string",
+            "description": "**Tran Account**, merchant account iden whic will be debited for the payment cost."
+          },
+          "extra_info": {
+            "type": "object",
+            "properties": {
+              "ref": {
                 "type": "string",
-                "description": "payment method (cash / ...)",
-                "deprecated": true
+                "description": "**Reference**, extra reference .\n\n_Most of the times it is used to record voucher number_"
               },
-              "cus_info": {
+              "notes": {
                 "type": "string",
-                "description": "customer of user info .",
-                "deprecated": true
+                "description": "**Extra notes**, ...."
               }
             }
           }
         },
         "required": [
           "tco",
-          "t_ref",
-          "service",
-          "t_amt",
-          "mer_acc",
-          "tot_cst"
+          "ref",
+          "amt",
+          "cst",
+          "recip",
+          "acc"
         ]
       },
-      "TransfareOrder": {
-        "title": "TransfareOrder",
+      "Order": {
+        "description": "Payment order model used with requests / responses",
         "type": "object",
         "properties": {
-          "tco": {
-            "type": "integer",
-            "description": "Transaction code (Transfare Tran Type)"
-          },
-          "t_ref": {
-            "type": "string",
-            "description": "Unique Tran ref"
-          },
-          "t_amt": {
+          "itm": {
             "type": "number",
-            "description": "Tran amount"
+            "description": "Order Item, the item/product/services code selected."
           },
-          "t_cur": {
-            "type": "string",
-            "description": "Tran Currency"
-          },
-          "t_typ": {
-            "type": "integer",
-            "description": "Transfare type (fund, refund, comission, ...etc) code"
-          },
-          "t_fee": {
+          "den": {
             "type": "number",
-            "description": "Tran Fees "
+            "description": "Order Denomantion, the class/bundel/offer code of selected item in case of `item` is not't supporting open amount."
           },
-          "tot_cst": {
+          "amt": {
             "type": "number",
-            "description": "Total Transfare cost (Debit amount).\n= (t_amt + t_fee) * ex_rate."
+            "description": "Order amount, the amount to be credited to the receipent account.",
+            "format": "double",
+            "example": 1200
           },
-          "ex_rate": {
+          "cur": {
+            "type": "string",
+            "description": "Order amount currency, the currency of payment.",
+            "minLength": 3,
+            "maxLength": 3,
+            "enum": [
+              "YER",
+              "USD",
+              "ERU",
+              "ADE",
+              "SRY"
+            ]
+          },
+          "cst": {
             "type": "number",
-            "description": "Exchange rate from tran curr to acc curr"
+            "description": "Order cost, the total amount that will be debited from account.\n\n**Cost (cst)** is calculated as following :\n```\n#### Open Amount:\n Cost = (amt x item_cost x exchange_rate) + fee\n#### Closed Amount\nCost = (item_cost x den_cost x exchange_rate)  + fee\n### Card / E-Voucher Item:\nCost = (item_cost x den_cost x qty x exchange_rate)  + fee\n```"
           },
-          "dr_acc": {
-            "type": "string",
-            "description": "Debit account ( sender account)"
+          "qty": {
+            "type": "number",
+            "description": "Order quentity, used only in case of e-voucher items or cards items",
+            "default": 1,
+            "minimum": 1,
+            "exclusiveMinimum": false
           },
-          "cr_acc": {
+          "sub_act": {
             "type": "string",
-            "description": "Credit account ( receipent account)"
-          },
-          "rem": {
-            "type": "string",
-            "description": "Remarks"
-          },
-          "o_ref": {
-            "type": "string",
-            "description": "any addational data provided by user as ref"
+            "minLength": 1,
+            "enum": [
+              "n",
+              "r",
+              "d"
+            ],
+            "description": "Order Sub Action, the action requied to be executed with payment.\n\n_in this time it used only with **Yemen Mobile** offers_"
           }
         },
         "required": [
-          "tco",
-          "t_ref",
-          "t_amt",
-          "t_typ",
-          "tot_cst",
-          "dr_acc",
-          "cr_acc"
+          "itm",
+          "amt",
+          "cst"
         ],
-        "description": "Transfare Order Details Model"
+        "title": "Payment Order Model",
+        "x-examples": {
+          "payment-order-example": {
+            "itm": 12,
+            "den": 48,
+            "amt": 1200,
+            "cur": "YER",
+            "cst": 1200,
+            "qty": 1,
+            "sub_act": "n"
+          }
+        },
+        "x-tags": [
+          "Payment"
+        ]
       }
     },
     "securitySchemes": {
